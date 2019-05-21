@@ -14,7 +14,7 @@
                         <label class="primary-color">Full Name</label>
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-                         <input type="text" name="last_name" placeholder="Last Name" class="">
+                         <input type="text" name="last_name" placeholder="Last Name" class="form-control">
                     </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
                             {{Form::text('first_name', '', ['class' => ($errors->has('first_name')) ? 'form-control form-control-sm is-invalid' : 'form-control form-control-sm input-label rounded-0', 'placeholder' => 'First Name'])}}
