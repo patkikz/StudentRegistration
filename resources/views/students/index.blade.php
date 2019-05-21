@@ -6,10 +6,10 @@
 @endsection
 
 @section('content')
-    <h1>Students' List</h1>
-
-    @if (count($students) > 1)
-    <table>
+    <h1>Students' List <a href="/students/create"><button class="float-right btn btn-primary">Add Student</button></a></h1>
+    
+    @if (count($students) > 0)
+    <table class="table table-striped">
         <tr>
             <th>Student Number</th>
             <th>Last Name</th>
@@ -25,10 +25,12 @@
             <td>{{$s->middle_name}}</td>
             <td><a href="/students/{{$s->id}}/edit" class="btn btn-dark">Edit</a></td>
             <td>
-                {!!Form::open(['action' => ['StudentsController@destroy', $s->id], 'method' => 'POST'])!!}
-                {{Form::hidden('_method', 'DELETE')}}
-                {{Form::submit('Delete', ['class' => 'btn btn-danger'])}}
-                {!!Form::close()!!}
+                <form action="/students/{{$s->id}}" method="POST">
+                    {{ method_field('DELETE')}}
+                    {{ csrf_field() }}
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+                
             </td>
         </tr>
             @endforeach

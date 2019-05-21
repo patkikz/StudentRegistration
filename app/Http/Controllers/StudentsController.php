@@ -47,18 +47,20 @@ class StudentsController extends Controller
             [
                 'first_name' => 'required|min:2',
                 'last_name' => 'required|min:2',
+                'middle_name' => 'min:2',
                 'gender' => 'required',
                 'birthdate' => 'required',
                 'address' => 'required',
                 'contact' => 'required',
             ]
         );
-
+        
         $request['added_by'] = auth()->id(); 
 
         Student::create($request);
 
-        return redirect('/students')->withSuccess('Student Added Successfully!');
+        alert()->success('Added');
+        return redirect('/students');
     }
 
     /**
@@ -84,7 +86,7 @@ class StudentsController extends Controller
         {
             return redirect('/students')->with('error', 'Unauthorized Page');    
         }
-        return view('students.edit');
+        return view('students.edit', compact('student'));
         
     }
 
@@ -101,13 +103,15 @@ class StudentsController extends Controller
             [
             'first_name' => 'required|min:2',
                 'last_name' => 'required|min:2',
+                'middle_name' => 'min:2',
                 'gender' => 'required',
                 'birthdate' => 'required',
                 'address' => 'required',
                 'contact' => 'required',
             ]));
-
-        return redirect('/students')->withSuccess('Student Info Updated!');
+        
+        alert()->success('Edited!');
+        return redirect('/students');
     }
 
     /**
@@ -120,6 +124,6 @@ class StudentsController extends Controller
     {
         $student->delete();
 
-        return redirect('/students')->withSuccess('Student Removed!');
+        return redirect('/students')->with('Student Removed!');
     }
 }

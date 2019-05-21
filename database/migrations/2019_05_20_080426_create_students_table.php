@@ -21,7 +21,6 @@ class CreateStudentsTable extends Migration
             $table->enum('gender', [1,0])->default(0);
             $table->date('birthdate');
             $table->string('address');
-            $table->unsignedInteger('age');
             $table->unsignedInteger('contact');
             $table->unsignedInteger('added_by');
             $table->timestamps();
