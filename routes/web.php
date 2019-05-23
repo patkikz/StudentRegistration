@@ -23,10 +23,9 @@ Route::get('/users/{name}/{id}', function($name, $id){
 });
 
 Route::resource('students', 'StudentsController');
+Route::get('generate-pdf', 'StudentsController@generatePDF');
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
-Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');

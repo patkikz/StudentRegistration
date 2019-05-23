@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Student;
 use Illuminate\Http\Request;
+
 use Alert;
+use Carbon\Carbon;
+use PdfMerger;
 
 class StudentsController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -31,7 +34,14 @@ class StudentsController extends Controller
      */
     public function create()
     {
-        return view('students.create');
+        $startOfYear = Carbon::now()->startOfYear();
+        $endOfYear = Carbon::now()->endOfYear();
+        $students = Student::where('created_at', '>' , $startOfYear)->where('created_at', '<', $endOfYear)->get();
+        
+        $count = count($students) + 1;
+
+        $student_id = Carbon::now()->toDateString() . '-' . $count;   
+        return view('students.create', compact('student_id'));
 
     }
 
@@ -43,15 +53,17 @@ class StudentsController extends Controller
      */
     public function store(Request $request)
     {
+        
         $request = request()->validate(
             [
-                'first_name' => 'required|min:2',
-                'last_name' => 'required|min:2',
-                'middle_name' => 'min:2',
+                'student_no' => 'required',
+                'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+                'last_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+                'middle_name' => 'min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'gender' => 'required',
                 'birthdate' => 'required',
                 'address' => 'required',
-                'contact' => 'required',
+                'contact' => 'required|regex:/^[0-9]+$/|min:11',
             ]
         );
         
@@ -59,7 +71,7 @@ class StudentsController extends Controller
 
         Student::create($request);
 
-        alert()->success('Added');
+        alert()->success('Student Added Successfully!');
         return redirect('/students');
     }
 
@@ -71,7 +83,10 @@ class StudentsController extends Controller
      */
     public function show(Student $student)
     {
-        return view('students.show', compact('student'));
+        $dateOfBirth = $student->birthdate;
+        $age = Carbon::parse($dateOfBirth)->age;
+  
+        return view('students.show', compact('student', 'age'));
     }
 
     /**
@@ -101,16 +116,16 @@ class StudentsController extends Controller
     {
         $student->update(request()->validate(
             [
-            'first_name' => 'required|min:2',
-                'last_name' => 'required|min:2',
-                'middle_name' => 'min:2',
+            'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+                'last_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+                'middle_name' => 'min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'gender' => 'required',
                 'birthdate' => 'required',
                 'address' => 'required',
-                'contact' => 'required',
+                'contact' => 'required|regex:/^[0-9]+$/|min:11',
             ]));
         
-        alert()->success('Edited!');
+        alert()->success('Student Updated Successfully!')->persistent('Close');
         return redirect('/students');
     }
 
@@ -124,6 +139,7 @@ class StudentsController extends Controller
     {
         $student->delete();
 
-        return redirect('/students')->with('Student Removed!');
+        alert()->info('Student Removed!');
+        return redirect('/students');
     }
 }
