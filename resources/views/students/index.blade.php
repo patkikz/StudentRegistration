@@ -43,6 +43,13 @@
                             </tr>
                                 @endforeach
                         </table>
+                        <hr>
+                        <div class="float-right">
+                            <a href="{{url('/print-pdf')}}" class="btn btn-danger btn-sm"><i class="fas fa-file-pdf"> Export to PDF</i></a>
+                            <a href="{{url('/export-excel')}}" class="btn btn-success btn-sm"><i class="fas fa-file-excel"> Export Excel</i></a>
+                            <a href="{{url('/generate-word')}}" class="btn btn-primary btn-sm"><i class="fas fa-file-word">  Export Word</i></a>
+                        </div>
+                        
                             {{$students->links()}}
                         @else
                             <em>There are no students yet! Add someone now!</em>

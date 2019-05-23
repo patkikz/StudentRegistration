@@ -41,6 +41,7 @@
                                             </div>
 
                                             <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+                                                
                                                 <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror" placeholder="Last Name" value="{{$student->last_name}}">
                                                   
                                                 @error('last_name')
@@ -77,10 +78,11 @@
                                 <div class="form-group">
                                     <label class="primary-color">Gender</label>
                                         <div class="form-inline">
-                                            <input type="radio" name="gender" value="0" {{ ($student->gender=="0")? "checked" : "" }} class="form-check-input">Male 
+                                            <input type="radio" name="gender" value="Male" {{ ($student->gender=="0")? "checked" : "" }} class="form-check-input">Male 
+                                            
                                             {!! str_repeat('&nbsp;', 5) !!}
-                                            {{-- <div class="offse"></div> --}}
-                                            <input type="radio" name="gender" value="1" {{ ($student->gender=="1")? "checked" : "" }} class="form-check-input">Female
+                                            
+                                            <input type="radio" name="gender" value="Female" {{ ($student->gender=="1")? "checked" : "" }} class="form-check-input">Female
                                             
                                         </div>  
                                     </div>
@@ -123,6 +125,10 @@
                                             <div class="form-group row">
                                                 <button type="submit" class="btn btn-success btn-sm form-control">Submit</button>
                                             </div>    
+
+                                    <div class="form-group">
+                                    
+                                    </div>
                                                 
                             </div>
                                 </div>

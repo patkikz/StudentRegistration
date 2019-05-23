@@ -27,17 +27,7 @@
                     </tr>
                     <tr>
                         <td>Gender</td>
-                        <td>
-                            @if($student->gender == "0")
-                            {
-                                <?php echo "Male";?>
-                            }
-                            @else
-                            {
-                                <?php echo "Female"; ?>
-                            }
-                            @endif
-                        </td>
+                        <td>{{$student->gender}}</td>
                     </tr>
                     <tr>
                         <td>Birthday</td>

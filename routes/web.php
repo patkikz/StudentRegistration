@@ -18,12 +18,18 @@ Route::get('/about', 'PagesController@about');
 Route::get('/contacts', 'PagesController@contacts');
 
 
-Route::get('/users/{name}/{id}', function($name, $id){
-    return 'This is user '. $name . ' with an id of ' . $id;  
+Route::get('/users/{age}/{id}', function($age, $id){
+    return 'This is user '. $age . ' with an id of ' . $id;  
 });
 
 Route::resource('students', 'StudentsController');
-Route::get('generate-pdf', 'StudentsController@generatePDF');
+
+Route::get('/print-pdf', 'StudentsController@print');
+
+Route::get('/export-excel', 'StudentsController@export');
+
+Route::get('/generate-word', 'StudentsController@generateDocx');
+
 Auth::routes();
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
