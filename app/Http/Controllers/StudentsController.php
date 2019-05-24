@@ -28,7 +28,7 @@ class StudentsController extends Controller
     public function index()
     {
 
-        $students = Student::where('added_by', auth()->id())->orderBy('created_at')->paginate(10);
+        $students = Student::where('added_by', auth()->id())->orderBy('student_no', 'asc')->paginate(10);
         return view('students.index', compact('students'));
     }
 
@@ -203,7 +203,7 @@ class StudentsController extends Controller
         
         th, td {
           text-align: center;
-          padding: 1px;
+          padding: 5px;
           white-space: nowrap;
         }
         

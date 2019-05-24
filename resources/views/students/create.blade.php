@@ -87,7 +87,8 @@
                                                 
                                     <div class="form-group row">
                                         <label class="primary-color">Birthdate</label>
-                                            <input type="date" name="birthdate" class="form-control @error('birthdate') is-invalid @enderror" value="{{ old('birthdate')}}">  
+                                        {!! str_repeat('&nbsp', 20)!!} <span>Age: <b id="age"></b></span>
+                                            <input type="date" id="birth_date" name="birthdate" class="form-control @error('birthdate') is-invalid @enderror" value="{{ old('birthdate')}}">  
                                             @error('birthdate')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
@@ -135,11 +136,22 @@
 @endsection
 
 @section('scripts')
-    <script src="text/javascript">
-//     function _calculateAge(birthdate) { // birthday is a date
-//     var ageDifMs = Date.now() - birthdate.getTime();
-//     var ageDate = new Date(ageDifMs); // miliseconds from epoch
-//     return Math.abs(ageDate.getUTCFullYear() - 1970);
-// }
+
+    <script>
+    $(document).ready(function(){
+        $("#birth_date").change(function(){
+           var value = $("#birth_date").val();
+            var dob = new Date(value);
+            var today = new Date();
+            var age = Math.floor((today-dob) / (365.25 * 24 * 60 * 60 * 1000));
+            if(isNaN(age)) {
+                age=0;
+            }
+            else{
+                age=age;
+            }
+            $('#age').html(age);
+        }); 
+    });
     </script>
 @endsection

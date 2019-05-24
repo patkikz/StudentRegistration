@@ -12,7 +12,8 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                       <strong>Edit Student Info</strong> 
+                       <strong>Edit Student Info
+                            <a href="/students" class="btn btn-primary btn-sm float-right">Go back</a></strong> 
                     </div>
     
                     <div class="card-body">
@@ -78,11 +79,11 @@
                                 <div class="form-group">
                                     <label class="primary-color">Gender</label>
                                         <div class="form-inline">
-                                            <input type="radio" name="gender" value="Male" {{ ($student->gender=="0")? "checked" : "" }} class="form-check-input">Male 
+                                            <input type="radio" name="gender" value="Male" {{ ($student->gender=="Male")? "checked" : "" }} class="form-check-input">Male 
                                             
                                             {!! str_repeat('&nbsp;', 5) !!}
                                             
-                                            <input type="radio" name="gender" value="Female" {{ ($student->gender=="1")? "checked" : "" }} class="form-check-input">Female
+                                            <input type="radio" name="gender" value="Female" {{ ($student->gender=="Female")? "checked" : "" }} class="form-check-input">Female
                                             
                                         </div>  
                                     </div>
