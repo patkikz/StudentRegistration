@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Student;
 
 class DashboardController extends Controller
 {
@@ -22,7 +23,12 @@ class DashboardController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index()
-    {
-        return view('dashboard');
+    {   
+        $added_by = auth()->id();
+        $all = Student::where('added_by', $added_by)->withTrashed()->count();
+        $active = Student::where('added_by', $added_by)->count();
+        $inactive = Student::where('added_by', $added_by)->onlyTrashed()->count();
+
+        return view('dashboard', compact('all', 'active', 'inactive'));
     }
 }

@@ -21,7 +21,10 @@ class StudentsExport implements FromCollection, WithMapping, WithHeadings,WithCo
     */
     public function collection()
     {
-        return Student::all();
+        $added_by = auth()->id();
+        $studentList = Student::where('added_by', $added_by)->get();
+
+        return $studentList;
     }
 
     public function map($student): array

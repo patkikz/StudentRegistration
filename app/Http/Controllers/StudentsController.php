@@ -28,8 +28,9 @@ class StudentsController extends Controller
     public function index()
     {
 
-        $students = Student::where('added_by', auth()->id())->orderBy('student_no', 'asc')->paginate(10);
-        return view('students.index', compact('students'));
+        $students = Student::where('added_by', auth()->id())->orderBy('id', 'asc')->paginate(10);
+        $inactive = Student::where('added_by', auth()->id())->onlyTrashed()->orderBy('id', 'asc')->paginate(10);
+        return view('students.index', compact('students','inactive'));
     }
 
     /**
@@ -39,13 +40,30 @@ class StudentsController extends Controller
      */
     public function create()
     {
+
         $startOfYear = Carbon::now()->startOfYear();
         $endOfYear = Carbon::now()->endOfYear();
-        $students = Student::where('created_at', '>' , $startOfYear)->where('created_at', '<', $endOfYear)->get();
-        
-        $count = count($students) + 1;
+        $students = Student::where('created_at', '>' , $startOfYear)->where('created_at', '<', $endOfYear)->withTrashed()->get();
 
-        $student_id = Carbon::now()->toDateString() . '-' . $count;   
+        if(Student::count() != 0)
+        {
+            $latest = Student::latest()->first()->id;   
+        }
+        else
+        {
+            $latest = Student::latest()->first();
+        }
+        
+        $count = count($students) + 1001;
+
+        $latest = $latest + 1;
+
+        $date = Carbon::now();
+
+        $first = Carbon::parse($date)->format('Y-m');
+
+        $student_id = $first . '-' . $count . '-' . $latest; 
+
         return view('students.create', compact('student_id'));
 
     }
@@ -61,7 +79,7 @@ class StudentsController extends Controller
         
         $request = request()->validate(
             [
-                'student_no' => 'required',
+                'student_no' => 'required|unique:students',
                 'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'last_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'middle_name' => 'min:2|regex:/^[\pL\s\-]+$/u|max:255',
@@ -90,6 +108,12 @@ class StudentsController extends Controller
     {
         $dateOfBirth = $student->birthdate;
         $age = Carbon::parse($dateOfBirth)->age;
+
+        if(auth()->user()->id !== $student->added_by)
+        {
+            alert()->error('Unauthorized Page');
+            return redirect('/students');    
+        }
   
         return view('students.show', compact('student', 'age'));
     }
@@ -102,9 +126,10 @@ class StudentsController extends Controller
      */
     public function edit(Student $student)
     {
-          if(auth()->user()->id !== $student->added_by)
+        if(auth()->user()->id !== $student->added_by)
         {
-            return redirect('/students')->with('error', 'Unauthorized Page');    
+            alert()->error('Unauthorized Page');
+            return redirect('/students');    
         }
         return view('students.edit', compact('student'));
         
@@ -127,10 +152,10 @@ class StudentsController extends Controller
                 'gender' => 'required',
                 'birthdate' => 'required',
                 'address' => 'required',
-                'contact' => 'required|regex:/^[0-9]+$/|min:11',
+                'contact' => 'required|regex:/^[0-9]+$/|min:11|max:11',
             ]));
         
-        alert()->success('Student Updated Successfully!')->persistent('Close');
+        alert()->success('Student Updated Successfully!');
         return redirect('/students');
     }
 
@@ -142,16 +167,23 @@ class StudentsController extends Controller
      */
     public function destroy(Student $student)
     {
+        if(auth()->user()->id !== $student->added_by)
+        {
+            alert()->error('Unauthorized Page');
+            return redirect('/students');    
+        }
+
         $student->delete();
 
         alert()->info('Student Removed!');
         return redirect('/students');
     }
 
-    //This will generate pdf file for students lists
+    //This will generate pdf file using barryvdh-laravel-dompdf
     public function print()
     {
-        $studentList = Student::all();
+      $added_by = auth()->id();
+        $studentList = Student::where('added_by', $added_by)->get();
         
 
        // This  $data array will be passed to our PDF blade
@@ -167,7 +199,7 @@ class StudentsController extends Controller
     }
 
 
-    // This will export data from database to excel
+    // This will export data from database to excel using maatwebsite/excel
     public function export() 
     {
         return Excel::download(new StudentsExport, 'student_list.xlsx');
@@ -176,7 +208,8 @@ class StudentsController extends Controller
     //This will create a word document
     public function generateDocx()
     {
-        $studentList = Student::all();
+        $added_by = auth()->id();
+        $studentList = Student::where('added_by', $added_by)->get();
 
         $headers = array(
             "Content-type"=>"application/xml",
@@ -227,7 +260,7 @@ class StudentsController extends Controller
         {
             $content .= '<tr>';
             $content .= '<td>'. $sl->student_no .'</td>';
-            $content .= '<td>'. $sl->first_name . " ". $sl->middle_name[0] . ".". $sl->last_name .'</td>';
+            $content .= '<td>'. $sl->first_name . " ". $sl->middle_name[0] . ". ". $sl->last_name .'</td>';
             $content .= '<td>'. $sl->gender.'</td>';
             $content .= '<td>'. ($sl->birthdate)->format('F d, Y').'</td>';
             $content .= '<td>'. $sl->address.'</td>';
@@ -241,5 +274,33 @@ class StudentsController extends Controller
         </html>';
     
     return \Response::make($content,200, $headers);
+    }  
+    
+    public function reactivate($id)
+    {
+        $added_by = auth()->id();
+
+        if(auth()->user()->id !== $added_by)
+        {
+            alert()->error('Unauthorized Page');
+            return redirect('/students');    
+        }
+        
+
+        $student= Student::where('added_by', $added_by)->withTrashed()->findOrFail($id)->restore();   
+
+        alert()->success('Student Reactivated!');
+        return redirect('/students');
+    }
+
+    public function permanentDelete($id)
+    {
+        $added_by = auth()->id();
+
+        $student = Student::where('added_by', $added_by)->withTrashed()->findOrFail($id)->forceDelete();
+
+        alert()->warning('Student Permanently Removed!');
+
+        return redirect('/students');
     }
 }

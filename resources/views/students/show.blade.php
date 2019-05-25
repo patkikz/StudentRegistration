@@ -5,7 +5,7 @@
 @endsection
 @section('content')
 
-<div class="contaner p-5">
+<div class="container-flui p-5">
     <div class="card rounded-0">
     <div class="card-header pb-1">
         <h4>Student Information <a href="/students" class="btn btn-primary btn-sm float-right">Go back</a></h4>
@@ -15,7 +15,6 @@
     
         <div class="col-lg-6 col-xl-6">
             <div>
-            
                 <table class="table table-bordered table-sm">
                     <tr>
                         <td>Student No.</td>

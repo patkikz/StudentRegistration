@@ -23,6 +23,10 @@ Route::get('/users/{age}/{id}', function($age, $id){
 });
 
 Route::resource('students', 'StudentsController');
+Route::get('/students/{id}/restore', 'StudentsController@reactivate');
+Route::post('/students/{id}/restore', 'StudentsController@reactivate');
+
+Route::match(['delete'],'/students/{id}/remove', 'StudentsController@permanentDelete');
 
 Route::get('/print-pdf', 'StudentsController@print');
 
@@ -33,5 +37,8 @@ Route::get('/generate-word', 'StudentsController@generateDocx');
 Auth::routes();
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+
+Route::get('/daterange', 'DateRangeController@index');
+Route::post('/daterange/fetch_data', 'DateRangeController@fetch_data')->name('daterange.fetch_data');
 
 

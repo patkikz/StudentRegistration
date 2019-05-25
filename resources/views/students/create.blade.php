@@ -27,7 +27,13 @@
                                                     </div>
         
                                                     <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                                        <input type="text" name="student_no" class="form-control" value="{{$student_id}}" readonly>
+                                                        <input type="text" name="student_no" class="form-control form-control-sm @error('student_no') is-invalid @enderror" value="{{$student_id}}" readonly>
+
+                                                        @error('student_no')
+                                                        <span class="invalid-feedback">
+                                                            <strong>{{$message}}</strong>
+                                                        </span>
+                                                        @enderror
                                                     </div>
                                                 </div>
                                             </div>
@@ -39,7 +45,7 @@
                                             </div>
 
                                             <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-                                                <input type="text" name="last_name" class="form-control @error('last_name') is-invalid @enderror" placeholder="Last Name" value="{{ old('last_name')}}">
+                                                <input type="text" name="last_name" class="form-control form-control-sm @error('last_name') is-invalid @enderror" placeholder="Last Name" value="{{ old('last_name')}}">
                                                   
                                                 @error('last_name')
                                                 <span class="invalid-feedback">
@@ -49,7 +55,7 @@
                                             </div>
 
                                             <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-                                                <input type="text" name="first_name" class="form-control input-sm @error('first_name') is-invalid @enderror" placeholder="First Name" value="{{ old('first_name') }}">
+                                                <input type="text" name="first_name" class="form-control form-control-sm @error('first_name') is-invalid @enderror" placeholder="First Name" value="{{ old('first_name') }}">
                                                     
                                                 @error('first_name')
                                                 <span class="invalid-feedback">
@@ -59,7 +65,7 @@
                                             </div>
 
                                             <div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
-                                                <input type="text" name="middle_name" class="form-control @error('middle_name') is-invalid @enderror" placeholder="Middle Name"
+                                                <input type="text" name="middle_name" class="form-control form-control-sm  @error('middle_name') is-invalid @enderror" placeholder="Middle Name"
                                                     value="{{ old('middle_name')}}">   
                                                     
                                                 @error('middle_name')
@@ -88,7 +94,7 @@
                                     <div class="form-group row">
                                         <label class="primary-color">Birthdate</label>
                                         {!! str_repeat('&nbsp', 20)!!} <span>Age: <b id="age"></b></span>
-                                            <input type="date" id="birth_date" name="birthdate" class="form-control @error('birthdate') is-invalid @enderror" value="{{ old('birthdate')}}">  
+                                            <input type="date" id="birth_date" name="birthdate" class="form-control form-control-sm @error('birthdate') is-invalid @enderror" value="{{ old('birthdate')}}">  
                                             @error('birthdate')
                                                 <span class="invalid-feedback">
                                                     <strong>{{$message}}</strong>
@@ -99,7 +105,7 @@
                                     <div class="form-group row">
                                                 <label class="primary-color">Address</label>
                                               
-                                                    <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" placeholder="address" value="{{ old('address') }}">
+                                                    <input type="text" name="address" class="form-control form-control-sm @error('address') is-invalid @enderror" placeholder="address" value="{{ old('address') }}">
                                                         
                                                     @error('address')
                                                     <span class="invalid-feedback">
@@ -111,7 +117,7 @@
                                                 
                                             <div class="form-group row">
                                                 <label class="primary-color">Contact no.</label>
-                                                    <input type="text" name="contact" class="form-control @error('contact') is-invalid @enderror" placeholder="contact" value="{{ old('contact')}}" maxlength="11">
+                                                    <input type="text" name="contact" class="form-control form-control-sm @error('contact') is-invalid @enderror" placeholder="contact" value="{{ old('contact')}}" maxlength="11">
                                                         
                                                     @error('contact')
                                                     <span class="invalid-feedback">
@@ -121,7 +127,7 @@
                                             </div>
                                             
                                             <div class="form-group row">
-                                                <button type="submit" class="btn btn-success form-control">Submit</button>
+                                                <button type="submit" class="btn btn-success btn-sm form-control form-control-sm">Submit</button>
                                             </div>    
                                                 
                             </div>
