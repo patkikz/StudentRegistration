@@ -28,9 +28,9 @@ class StudentsController extends Controller
     public function index()
     {
 
-        $students = Student::where('added_by', auth()->id())->orderBy('id', 'asc')->paginate(10);
-        $inactive = Student::where('added_by', auth()->id())->onlyTrashed()->orderBy('id', 'asc')->paginate(10);
-        return view('students.index', compact('students','inactive'));
+            $students = Student::where('added_by', auth()->id())->orderBy('id', 'asc')->paginate(10);
+            $inactive = Student::where('added_by', auth()->id())->onlyTrashed()->orderBy('id', 'asc')->paginate(10);
+            return view('students.index', compact('students','inactive'));
     }
 
     /**

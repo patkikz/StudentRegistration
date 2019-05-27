@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
+use App\Student;
 
 class DateRangeController extends Controller
 {
@@ -18,13 +18,11 @@ class DateRangeController extends Controller
         {
             if($request->from_date !='' && $request->to_date !='')
             {
-                $data = DB::table('students')
-                    ->whereBetween('created_at', array([$request->from_date, $request->to_date]))
-                    ->get();
+                $data = Student::whereBetween('created_at', [$request->from_date, $request->to_date])->get();
             }
             else
             {
-                $data = DB::table('students')->orderBy('created_at', 'asc')->get();
+                $data = Student::orderBy('created_at', 'asc')->get();
             }
 
             echo json_encode($data);

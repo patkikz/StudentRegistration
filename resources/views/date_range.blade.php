@@ -1,6 +1,6 @@
 <html>
  <head>
-  <title>Date Range Fiter Data in Laravel using Ajax</title>
+  <title>Student Filter</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" />
@@ -75,6 +75,9 @@ $(document).ready(function(){
    dataType:"json",
    success:function(data)
    {
+    if(data.length == 0){
+        console.log('empty');
+    }
     var output = '';
     $('#total_records').text(data.length);
     for(var count = 0; count < data.length; count++)

@@ -57,11 +57,25 @@
                                 <strong>Inactive Students</strong>
                             </div>
                         </div>
-
                     </div>
+                        
+                    <h1 class="text-center">{{ $chart1->options['chart_title'] }}</h1>
+                    {!! $chart1->renderHtml() !!}
+
+                    <hr>
+                    
+                    <h1 class="text-center">{{ $chart2->options['chart_title'] }}</h1>
+                    {!! $chart2->renderHtml() !!}
                 </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+{!! $chart1->renderChartJsLibrary() !!}
+{!! $chart1->renderJs() !!} 
+{!! $chart2->renderChartJsLibrary() !!}
+{!! $chart2->renderJs() !!}    
 @endsection

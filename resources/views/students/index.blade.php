@@ -80,7 +80,7 @@
                                     <td>
                                         <form action="/students/{{$i->id}}/restore" method="POST">
                                             {{ csrf_field() }}
-                                            <button class="btn btn-warning btn-sm"><b>Reactivate</b></button>
+                                            <button class="btn btn-success btn-sm"><b>Reactivate</b></button>
                                         </form>
                                     </td>
                                     <td>
