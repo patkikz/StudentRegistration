@@ -27,10 +27,22 @@ class StudentsController extends Controller
      */
     public function index()
     {
-
             $students = Student::where('added_by', auth()->id())->orderBy('id', 'asc')->paginate(10);
             $inactive = Student::where('added_by', auth()->id())->onlyTrashed()->orderBy('id', 'asc')->paginate(10);
-            return view('students.index', compact('students','inactive'));
+            
+        if(request()->ajax())
+        {
+            return datatables()->of(Student::latest()->get())
+                    ->addColumn('action', function($data){
+                        $button = '<button type="button" name="edit" id="'.$data->id.'" class="edit btn btn-dark btn-sm"><i class="fas fa-edit"></i></button>';
+                        $button .= '&nbsp;&nbsp;';
+                        $button .= '<button type="button" name="delete" id="'.$data->id.'" class="delete btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>';
+                        return $button;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+        return view('students.index', compact('students', 'inactive'));
     }
 
     /**

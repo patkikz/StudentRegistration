@@ -58,6 +58,8 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <hr>
                         
                     <h1 class="text-center">{{ $chart1->options['chart_title'] }}</h1>
                     {!! $chart1->renderHtml() !!}
