@@ -28,7 +28,7 @@ div
 }
 </style>
 <body>
-  <h1 style="text-align:center">{{ $heading}}</h1>
+  <h1 style="text-align:center">{{$heading}}</h1>
   <div>
         <table width="100%" style="width:100%">
             <tr>
@@ -39,7 +39,8 @@ div
                 <th>Address</th>
                 <th>Contact No.</th>
             </tr>
-            @foreach ($content as $c)
+            @if (count($content) > 0)
+                @foreach ($content as $c)
             <tr>
                 <td>{{$c->student_no}}</td>
                 <td>{{$c->first_name . " " . $c->middle_name[0] . '.' . " ". $c->last_name }}</td>
@@ -49,6 +50,12 @@ div
                 <td>{{$c->contact}}</td>
             </tr>
             @endforeach
+            @else
+              <tr>
+                <td colspan="6"> No Data Available</td>
+              </tr>
+            @endif
+            
         </table>
   </div>
 </body>

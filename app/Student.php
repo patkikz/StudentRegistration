@@ -9,7 +9,9 @@ class Student extends Model
 {
     use SoftDeletes;
     
-    protected $guarded = [];
+    protected $fillable = [
+        'student_no', 'last_name', 'first_name', 'middle_name', 'gender', 'birthdate', 'address', 'contact', 'added_by'
+    ];
 
     protected $dates = ['birthdate'];
 

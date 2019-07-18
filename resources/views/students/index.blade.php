@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <div class="table-responsive table-sm">
                         <table class="table table-bordered table-striped table-sm" id="student_table">
                             <thead>
                                 <tr>
@@ -31,9 +31,9 @@
                     </div>
                         <hr>
                         <div class="float-right">
-                            <a href="{{url('/print-pdf')}}" class="btn btn-outline-danger btn-sm"><i class="fas fa-file-pdf"> Export to PDF</i></a>
-                            <a href="{{url('/export-excel')}}" class="btn btn-outline-success btn-sm"><i class="fas fa-file-excel"> Export Excel</i></a>
-                            <a href="{{url('/generate-word')}}" class="btn btn-outline-primary btn-sm"><i class="fas fa-file-word">  Export Word</i></a>
+                            <a href="{{url('/print-pdf')}}" class="btn btn-outline-danger btn-sm" target="_blank"><i class="fas fa-file-pdf"> Export to PDF</i></a>
+                            <a href="{{url('/export-excel')}}" class="btn btn-outline-success btn-sm" target="_blank"><i class="fas fa-file-excel"> Export Excel</i></a>
+                            <a href="{{url('/generate-word')}}" class="btn btn-outline-primary btn-sm" target="_blank"><i class="fas fa-file-word">  Export Word</i></a>
                         </div>
                 </div>
             </div>
@@ -116,24 +116,75 @@
                 <h4 class="modal-title" id="modelHeading"></h4>
             </div>
             <div class="modal-body">
-                <form id="studentForm" name="studentForm" class="form-horizontal">
-                   <input type="hidden" name="product_id" id="product_id">
+                <span id="form_result"></span>
+                <form id="studentForm" name="studentForm" class="form-horizontal" method="POST">
+                    {{ csrf_field() }}
+                   <input type="hidden" name="id" id="id">
                     <div class="form-group">
-                        <label for="name" class="col-sm-2 control-label">Name</label>
+                        <label for="student_no" class="col-sm-4 control-label">Student Number</label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" value="" maxlength="50" required="">
+                        <input type="text" class="form-control" id="student_no" name="student_no" value="{{$student_id}}" required>
                         </div>
                     </div>
      
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Details</label>
+                        <label class="col-sm-3 control-label">Last Name</label>
                         <div class="col-sm-12">
-                            <textarea id="detail" name="detail" required="" placeholder="Enter Details" class="form-control"></textarea>
+                            <input type="text" id="last_name" name="last_name" placeholder="Enter Last Name" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">First Name</label>
+                        <div class="col-sm-12">
+                            <input type="text" id="first_name" name="first_name" placeholder="Enter First Name" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Middle Name</label>
+                        <div class="col-sm-12">
+                            <input type="text" id="middle_name" name="middle_name" placeholder="Enter Middle Name" class="form-control">
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label class="col-sm-3 control-label">Gender</label>
+                        <div class="col-sm-4">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="radio" name="gender" id="gender" value="Male" class="form-check-input">Male 
+                                            
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                            <input type="radio" name="gender" id="gender" value="Female" class="form-check-input">Female
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label class="col-sm-3 control-label">Birthday</label>
+                        <div class="col-sm-12">
+                            <input type="date" id="birthdate" name="birthdate" class="form-control">
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label class="col-sm-3 control-label">Address</label>
+                        <div class="col-sm-12">
+                            <input type="text" id="address" name="address" placeholder="Enter Middle Address" class="form-control">
+                        </div>
+                    </div>
+
+                     <div class="form-group">
+                        <label class="col-sm-3 control-label">Contact Number</label>
+                        <div class="col-sm-12">
+                            <input type="text" id="contact" name="contact" placeholder="Enter Middle Contact" class="form-control">
                         </div>
                     </div>
       
                     <div class="col-sm-offset-2 col-sm-10">
-                     <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Save changes
+                     <input type="hidden" name="action" id="action" />
+                    <input type="hidden" name="hidden_id" id="hidden_id" />
+                    <input type="submit" name="action_button" id="action_button" class="btn btn-success" value="Add" />
                      </button>
                     </div>
                 </form>
@@ -166,7 +217,7 @@
     <script type="text/javascript">
         $(document).ready(function()
         {
-            //DataTable Trigger
+            //DataTable
             $('#student_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -192,12 +243,122 @@
                 $('#formModal').modal('show');
             });
 
+            $('#studentForm').on('submit', function(e){
+                e.preventDefault();
+                if($('#action').val() == 'Add')
+                {
+                    $.ajax({
+                        url: "{{ route('students.store') }}",
+                        method: "POST",
+                        data: new FormData(this),
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                        dataType: "json",
+                        success:function(data)
+                        {
+                            var html = '';
+                            if(data.errors)
+                            {
+                                html += '<div class="alert alert-danger">';
+                                for(var i = 0; i < data.errors.length; i++)
+                                {
+                                    html += '<p>' + data.errors[i] + '</p>';
+                                }
+                                html += '</div>';
+                            }
+                            if(data.success)
+                            {
+                                html = '<div class="alert alert-success">' + data.success + '</div>';
+                                $('#studenForm').empty();
+                                $('#student_table').DataTable().ajax.reload();
+                            }
+                            $('#form_result').html(html);
+                        }
+                    })
+                }
+                if($('#action').val() == 'Edit')
+                {
+                    $.ajax({
+                        url: "{{ route('students.update') }}",
+                        method: "POST",
+                        data: new FormData(this),
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                        dataType: "json",
+                        success:function(data)
+                        {
+                            var html = '';
+                            if(data.errors)
+                            {
+                                html = '<div class="alert alert-danger">';
+                                for(var i = 0; i < data.errors.length; i++)
+                                {
+                                    html += '<p>' + data.errors[i] + '</p>';
+                                }
+                                html += '</div>';
+                            }
+                            if(data.success)
+                            {
+                                html = '<div class="alert alert-success">' + data.success + '</div>';
+                                $('#studenForm').empty();
+                                $('#student_table').DataTable().ajax.reload();
+                            }
+                            $('#form_result').html(html);
+                        }
+                    });
+                }
+            });
+            $(document).on('click', '.edit', function(){
+                var id = $(this).attr('id');
+                $('#form_result').html('');
+                $.ajax({
+                    url: "/students/"+id+"/edit",
+                    dataType: "json",
+                    success:function(dta)
+                    {
+                        $('#student_no').val(dta.data.student_no);
+                        $('#last_name').val(dta.data.last_name);
+                        $('#first_name').val(dta.data.first_name);
+                        $('#middle_name').val(dta.data.middle_name);
+                        $('#gender').val(dta.data.gender);
+                        $('#birthdate').val(dta.data.birthdate);
+                        $('#address').val(dta.data.address);
+                        $('#contact').val(dta.data.contact);
+                        $('#hidden_id').val(dta.data.id);
+                        $('.modal-title').text("Edit Student");
+                        $('#action_button').val("Edit");
+                        $('#action').val("Edit");
+                        $('#formModal').modal('show');
 
-            //Delete Modal
-            var student_id;
+                        console.log(dta.data);
+                    }
+                });
+            });
 
-            $(document).on
+            var user_id;
+            
+            $(document).on('click', '.delete', function(){
+                user_id = $(this).attr('id');
+                $('#confirmModal').modal('show');
+            }); 
 
+            $('#ok_button').click(function(){
+                $.ajax({
+                    url: "students/destroy/"+user_id,
+                    beforeSend:function(){
+                        $('#ok_button').text('Deleting...');
+                    },
+                    success:function(data)
+                    {
+                        setTimeout(function(){
+                            $('#confirmModal').modal('hide');
+                            $('#student_table').DataTable().ajax.reload();
+                        }, 500);
+                    }
+                });
+            });
         });
     </script>
 @endsection

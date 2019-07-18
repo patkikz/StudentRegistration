@@ -25,6 +25,9 @@ Route::get('/users/{age}/{id}', function($age, $id){
 Route::resource('students', 'StudentsController');
 Route::get('/students/{id}/restore', 'StudentsController@reactivate');
 Route::post('/students/{id}/restore', 'StudentsController@reactivate');
+Route::post('students/update', 'StudentsController@update')->name('students.update');
+
+Route::get('students/destroy/{id}', 'StudentsController@destroy');
 
 Route::match(['delete'],'/students/{id}/remove', 'StudentsController@permanentDelete');
 
@@ -42,3 +45,7 @@ Route::get('/daterange', 'DateRangeController@index');
 Route::post('/daterange/fetch_data', 'DateRangeController@fetch_data')->name('daterange.fetch_data');
 
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

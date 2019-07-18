@@ -13,6 +13,8 @@ use PDF;
 use PdfReport;
 use DB;
 use Exception;
+use Validator;
+
 
 class StudentsController extends Controller
 {
@@ -27,7 +29,30 @@ class StudentsController extends Controller
      */
     public function index()
     {
-            $students = Student::where('added_by', auth()->id())->orderBy('id', 'asc')->paginate(10);
+        $startOfYear = Carbon::now()->startOfYear();
+        $endOfYear = Carbon::now()->endOfYear();
+        $students = Student::where('created_at', '>' , $startOfYear)->where('created_at', '<', $endOfYear)->withTrashed()->get();
+
+        if(Student::count() != 0)
+        {
+            $latest = Student::latest()->first()->id;   
+        }
+        else
+        {
+            $latest = Student::latest()->first();
+        }
+        
+        $count = count($students) + 1001;
+
+        $latest = $latest + 1;
+
+        $date = Carbon::now();
+
+        $first = Carbon::parse($date)->format('Y-m');
+
+        $student_id = $first . '-' . $count . '-' . $latest; 
+
+            $active = Student::where('added_by', auth()->id())->orderBy('id', 'asc')->paginate(10);
             $inactive = Student::where('added_by', auth()->id())->onlyTrashed()->orderBy('id', 'asc')->paginate(10);
             
         if(request()->ajax())
@@ -42,7 +67,7 @@ class StudentsController extends Controller
                     ->rawColumns(['action'])
                     ->make(true);
         }
-        return view('students.index', compact('students', 'inactive'));
+        return view('students.index', compact('active', 'inactive', 'student_id'));
     }
 
     /**
@@ -89,8 +114,26 @@ class StudentsController extends Controller
     public function store(Request $request)
     {
         
-        $request = request()->validate(
-            [
+        // $request = request()->validate(
+        //     [
+        //         'student_no' => 'required|unique:students',
+        //         'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+        //         'last_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+        //         'middle_name' => 'min:2|regex:/^[\pL\s\-]+$/u|max:255',
+        //         'gender' => 'required',
+        //         'birthdate' => 'required',
+        //         'address' => 'required',
+        //         'contact' => 'required|regex:/^[0-9]+$/|min:11',
+        //     ]
+        // );
+        
+        // $request['added_by'] = auth()->id(); 
+
+        // Student::create($request);
+
+        // alert()->success('Student Added Successfully!');
+        // return redirect('/students');
+        $rules = array(
                 'student_no' => 'required|unique:students',
                 'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'last_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
@@ -99,15 +142,29 @@ class StudentsController extends Controller
                 'birthdate' => 'required',
                 'address' => 'required',
                 'contact' => 'required|regex:/^[0-9]+$/|min:11',
-            ]
         );
-        
-        $request['added_by'] = auth()->id(); 
+        $error = Validator::make($request->all(), $rules);
 
-        Student::create($request);
+        if($error->fails())
+        {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
 
-        alert()->success('Student Added Successfully!');
-        return redirect('/students');
+        $form_data = array(
+                'student_no' => $request->student_no, 
+                'last_name' => $request->last_name, 
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'gender' => $request->gender,
+                'birthdate' => $request->birthdate,
+                'address' => $request->address,
+                'contact' => $request->contact,
+                'added_by' => auth()->id()
+        );
+
+        Student::create($form_data);
+
+        return response()->json(['success' => 'Student Added succesfully']);
     }
 
     /**
@@ -136,15 +193,13 @@ class StudentsController extends Controller
      * @param  \App\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit(Student $student)
+    public function edit($id)
     {
-        if(auth()->user()->id !== $student->added_by)
+        if(request()->ajax())
         {
-            alert()->error('Unauthorized Page');
-            return redirect('/students');    
-        }
-        return view('students.edit', compact('student'));
-        
+            $data = Student::findOrFail($id);
+            return response()->json(['data' => $data]) ;
+        }   
     }
 
     /**
@@ -154,21 +209,41 @@ class StudentsController extends Controller
      * @param  \App\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(Request $request)
     {
-        $student->update(request()->validate(
-            [
-            'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
+        $rules = array(
+                'student_no' => 'required',
+                'first_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'last_name' => 'required|min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'middle_name' => 'min:2|regex:/^[\pL\s\-]+$/u|max:255',
                 'gender' => 'required',
                 'birthdate' => 'required',
                 'address' => 'required',
-                'contact' => 'required|regex:/^[0-9]+$/|min:11|max:11',
-            ]));
+                'contact' => 'required|regex:/^[0-9]+$/|min:11',
+        );
+
+        $error = Validator::make($request->all(), $rules);
+
+        if($error->fails())
+        {
+            return response()->json(['errors' => $error->errors()->all()]);
+        }
         
-        alert()->success('Student Updated Successfully!');
-        return redirect('/students');
+        $form_data = array(
+                'student_no' => $request->student_no, 
+                'last_name' => $request->last_name, 
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'gender' => $request->gender,
+                'birthdate' => $request->birthdate,
+                'address' => $request->address,
+                'contact' => $request->contact,
+                'added_by' => auth()->id()
+        );
+        
+        Student::where('id',$request->hidden_id)->update($form_data);
+        
+        return response()->json(['success' => 'Student Edited Successfully']);
     }
 
     /**
@@ -177,18 +252,10 @@ class StudentsController extends Controller
      * @param  \App\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Student $student)
+    public function destroy($id)
     {
-        if(auth()->user()->id !== $student->added_by)
-        {
-            alert()->error('Unauthorized Page');
-            return redirect('/students');    
-        }
-
-        $student->delete();
-
-        alert()->info('Student Removed!');
-        return redirect('/students');
+        $data = Student::findOrFail($id);
+        $data->delete();
     }
 
     //This will generate pdf file using barryvdh-laravel-dompdf
@@ -206,7 +273,7 @@ class StudentsController extends Controller
             ];
         
         $pdf = PDF::loadView('pdf_view', $data);  
-        return $pdf->download('student_list.pdf');
+        return $pdf->stream('student_list.pdf');
 
     }
 
@@ -267,17 +334,23 @@ class StudentsController extends Controller
                     <th>Contact No.</th>
                 </tr>
                 ';
-
-        foreach ($studentList as $sl)
+        if(count($studentList) > 0)
         {
-            $content .= '<tr>';
-            $content .= '<td>'. $sl->student_no .'</td>';
-            $content .= '<td>'. $sl->first_name . " ". $sl->middle_name[0] . ". ". $sl->last_name .'</td>';
-            $content .= '<td>'. $sl->gender.'</td>';
-            $content .= '<td>'. ($sl->birthdate)->format('F d, Y').'</td>';
-            $content .= '<td>'. $sl->address.'</td>';
-            $content .= '<td>'. $sl->contact.'</td>';
-            $content .= '</tr>';
+            foreach ($studentList as $sl)
+            {
+                $content .= '<tr>';
+                $content .= '<td>'. $sl->student_no .'</td>';
+                $content .= '<td>'. $sl->first_name . " ". $sl->middle_name[0] . ". ". $sl->last_name .'</td>';
+                $content .= '<td>'. $sl->gender.'</td>';
+                $content .= '<td>'. ($sl->birthdate)->format('F d, Y').'</td>';
+                $content .= '<td>'. $sl->address.'</td>';
+                $content .= '<td>'. $sl->contact.'</td>';
+                $content .= '</tr>';
+            }
+        }
+        else
+        {
+            $content .= '<td colspan="6">No Data Available</td>';
         }
         $content .= '
             </table>
